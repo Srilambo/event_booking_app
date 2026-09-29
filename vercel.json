@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "event-booking-api/api/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/event-booking-api/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/event_booking_app/build/web/$1"
+    }
+  ]
+}
