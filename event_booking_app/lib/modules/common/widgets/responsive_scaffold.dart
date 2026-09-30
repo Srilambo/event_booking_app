@@ -111,7 +111,7 @@ class ResponsiveScaffold extends StatelessWidget {
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
-                            color: isSelected ? primary.withOpacity(0.12) : Colors.transparent,
+                            color: isSelected ? primary.withValues(alpha: 0.12) : Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: ListTile(

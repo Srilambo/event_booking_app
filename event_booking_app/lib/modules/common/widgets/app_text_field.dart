@@ -62,7 +62,7 @@ class _AppTextFieldState extends State<AppTextField> {
           onChanged: widget.onChanged,
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: AppTextStyles.body(textSecondary.withOpacity(0.6)),
+            hintStyle: AppTextStyles.body(textSecondary.withValues(alpha: 0.6)),
             errorText: widget.errorText,
             prefixIcon: widget.prefixIcon,
             suffixIcon: widget.isPassword

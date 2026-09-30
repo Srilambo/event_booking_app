@@ -40,7 +40,7 @@ class TicketCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: booking.isConfirmed ? AppColors.success.withOpacity(0.15) : AppColors.error.withOpacity(0.15),
+                      color: booking.isConfirmed ? AppColors.success.withValues(alpha: 0.15) : AppColors.error.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(AppColors.radiusChip),
                     ),
                     child: Text(

@@ -47,7 +47,7 @@ class ManageUsersView extends StatelessWidget {
                         ),
                         Switch(
                           value: user.isActive,
-                          activeColor: AppColors.success,
+                          activeThumbColor: AppColors.success,
                           onChanged: (val) {
                             adminController.updateUserStatus(user.id, val);
                           },

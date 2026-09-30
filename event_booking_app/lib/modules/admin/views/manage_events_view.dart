@@ -38,7 +38,7 @@ class ManageEventsView extends StatelessWidget {
                   TextField(controller: descCtrl, decoration: const InputDecoration(labelText: 'Description'), maxLines: 2),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: selectedCategory,
+                    initialValue: selectedCategory,
                     items: ['Music', 'Tech', 'Sports', 'Arts', 'Business', 'Food', 'General']
                         .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                         .toList(),

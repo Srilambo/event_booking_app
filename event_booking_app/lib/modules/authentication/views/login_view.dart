@@ -109,7 +109,7 @@ class _LoginViewState extends State<LoginView> {
               // Left branding & illustration
               Expanded(
                 child: Container(
-                  color: primary.withOpacity(0.08),
+                  color: primary.withValues(alpha: 0.08),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

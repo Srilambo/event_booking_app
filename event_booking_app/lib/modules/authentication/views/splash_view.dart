@@ -42,7 +42,7 @@ class _SplashViewState extends State<SplashView> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: primary.withOpacity(0.15),
+                color: primary.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.event_available, size: 72, color: primary),

@@ -37,7 +37,7 @@ class ProfileView extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 48,
-                backgroundColor: primary.withOpacity(0.15),
+                backgroundColor: primary.withValues(alpha: 0.15),
                 child: Text(
                   user?.name.substring(0, 1).toUpperCase() ?? 'U',
                   style: AppTextStyles.displayLarge(primary),
@@ -51,7 +51,7 @@ class ProfileView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  color: primary.withOpacity(0.15),
+                  color: primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppColors.radiusChip),
                 ),
                 child: Text(
