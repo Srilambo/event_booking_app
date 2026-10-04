@@ -5,6 +5,9 @@ import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import compression from 'compression';
 import morgan from 'morgan';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { config } from './config/env.js';
 import { globalLimiter } from './middleware/rateLimit.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -14,12 +17,19 @@ import eventRoutes from './routes/event.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const webBuildPath = path.resolve(__dirname, '../../event_booking_app/build/web');
+
 const app = express();
 
-// Serverless response compatibility and req.query.url path middleware
+// Serverless response compatibility middleware
 app.use((req, res, next) => {
   if (res && !res._headers) res._headers = {};
   if (res && !res._headerNames) res._headerNames = {};
+  if (!req.socket) req.socket = {};
+  if (!req.socket.remoteAddress) req.socket.remoteAddress = (req.headers && req.headers['x-forwarded-for']) || '127.0.0.1';
+  if (!req.connection) req.connection = req.socket;
   if (req.query && req.query.url) {
     req.url = req.query.url;
   }
@@ -32,13 +42,12 @@ app.set('trust proxy', 1);
 // Security Middlewares
 if (!process.env.VERCEL) {
   app.use(helmet({
-    contentSecurityPolicy: false // Disable CSP for API backend
+    contentSecurityPolicy: false
   }));
 }
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl)
     if (!origin) return callback(null, true);
     if (
       config.allowedOrigins.includes(origin) ||
@@ -78,6 +87,21 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/admin', adminRoutes);
+
+// Static Web App Serving
+if (fs.existsSync(webBuildPath)) {
+  app.use(express.static(webBuildPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path === '/health') {
+      return next();
+    }
+    const indexPath = path.join(webBuildPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+    next();
+  });
+}
 
 // 404 Handler
 app.use((req, res, next) => {
