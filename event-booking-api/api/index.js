@@ -3,6 +3,9 @@ import { connectDB } from '../src/config/db.js';
 
 export default async function handler(req, res) {
   try {
+    if (req.headers && req.headers['x-matched-path']) {
+      req.url = req.headers['x-matched-path'];
+    }
     await connectDB();
     return app(req, res);
   } catch (error) {
