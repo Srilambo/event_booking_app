@@ -13,11 +13,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/index.js?path=/api/$1"
     },
     {
       "src": "/health",
-      "dest": "/api/index.js"
+      "dest": "/api/index.js?path=/health"
     },
     {
       "src": "/assets/(.*)",

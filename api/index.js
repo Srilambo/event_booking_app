@@ -5,9 +5,13 @@ export default async function handler(req, res) {
   try {
     const urlObj = new URL(req.url, 'http://localhost');
     const pathParam = urlObj.searchParams.get('path');
+    
     if (pathParam) {
       req.url = pathParam;
+    } else if (req.headers && (req.headers['x-forwarded-uri'] || req.headers['x-original-url'])) {
+      req.url = req.headers['x-forwarded-uri'] || req.headers['x-original-url'];
     }
+
     await connectDB();
     return app(req, res);
   } catch (error) {
