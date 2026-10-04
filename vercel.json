@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.js",
+      "src": "event-booking-api/api/index.js",
       "use": "@vercel/node"
     },
     {
@@ -13,11 +13,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.js?path=/api/$1"
+      "dest": "/event-booking-api/api/index.js?path=/api/$1"
     },
     {
       "src": "/health",
-      "dest": "/api/index.js?path=/health"
+      "dest": "/event-booking-api/api/index.js?path=/health"
     },
     {
       "src": "/assets/(.*)",
