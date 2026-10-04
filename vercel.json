@@ -1,15 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api"
-    },
-    {
-      "source": "/health",
-      "destination": "/api"
-    },
-    {
-      "source": "/((?!api|health).*)",
+      "source": "/((?!api).*)",
       "destination": "/event_booking_app/build/web/$1"
     }
   ]
