@@ -5,7 +5,7 @@ class ApiEndpoints {
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: kIsWeb
-        ? (kDebugMode ? 'http://localhost:5000/api/v1' : '/api?path=/api/v1')
+        ? (kDebugMode ? 'http://localhost:5000/api/v1' : '/api/v1')
         : 'http://localhost:5000/api/v1',
   );
 
