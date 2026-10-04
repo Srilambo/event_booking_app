@@ -10,7 +10,7 @@
       "destination": "/api?path=/health"
     },
     {
-      "source": "/((?!api|health).*)",
+      "source": "/((?!api|health|index\\.html|assets|canvaskit|icons|.*\\.js|.*\\.png|.*\\.json|.*\\.otf|.*\\.ttf).*)",
       "destination": "/index.html"
     }
   ]
