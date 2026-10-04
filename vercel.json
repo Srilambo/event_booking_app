@@ -4,10 +4,6 @@
     {
       "src": "event-booking-api/api/index.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "event_booking_app/build/web/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -16,11 +12,12 @@
       "dest": "/event-booking-api/api/index.js"
     },
     {
-      "handle": "filesystem"
+      "src": "/health",
+      "dest": "/event-booking-api/api/index.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/event_booking_app/build/web/index.html"
+      "dest": "/event_booking_app/build/web/$1"
     }
   ]
 }
