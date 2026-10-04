@@ -13,11 +13,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/event-booking-api/api/index.js"
+      "dest": "/event-booking-api/api/index.js?url=/api/$1"
     },
     {
       "src": "/health",
-      "dest": "/event-booking-api/api/index.js"
+      "dest": "/event-booking-api/api/index.js?url=/health"
     },
     {
       "src": "/assets/(.*)",

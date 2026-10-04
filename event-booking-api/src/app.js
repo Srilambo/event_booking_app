@@ -16,13 +16,12 @@ import adminRoutes from './routes/admin.routes.js';
 
 const app = express();
 
-// Serverless response compatibility and path normalization middleware
+// Serverless response compatibility and req.query.url path middleware
 app.use((req, res, next) => {
   if (res && !res._headers) res._headers = {};
   if (res && !res._headerNames) res._headerNames = {};
-  const forwardedUri = req.headers['x-forwarded-uri'] || req.headers['x-matched-path'];
-  if (forwardedUri && forwardedUri !== '/event-booking-api/api/index.js' && !forwardedUri.includes('/api/index.js')) {
-    req.url = forwardedUri;
+  if (req.query && req.query.url) {
+    req.url = req.query.url;
   }
   next();
 });
