@@ -1,27 +1,16 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "event-booking-api/api/index.js",
-      "use": "@vercel/node"
+      "source": "/api/(.*)",
+      "destination": "/api"
     },
     {
-      "src": "event_booking_app/build/web/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/event-booking-api/api/index.js"
+      "source": "/health",
+      "destination": "/api"
     },
     {
-      "src": "/health",
-      "dest": "/event-booking-api/api/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/event_booking_app/build/web/$1"
+      "source": "/((?!api|health).*)",
+      "destination": "/event_booking_app/build/web/$1"
     }
   ]
 }
