@@ -3,11 +3,18 @@ import { connectDB } from '../src/config/db.js';
 
 export default async function handler(req, res) {
   try {
-    const urlObj = new URL(req.url, 'http://localhost');
-    const pathParam = urlObj.searchParams.get('path');
-    if (pathParam) {
-      req.url = pathParam;
+    if (req.url && req.url.includes('/health')) {
+      req.url = '/health';
+    } else if (req.query && req.query['0']) {
+      const sub = req.query['0'];
+      req.url = sub.startsWith('/') ? sub : `/api/${sub}`;
+    } else if (req.headers && (req.headers['x-matched-path'] || req.headers['x-forwarded-uri'])) {
+      const target = req.headers['x-matched-path'] || req.headers['x-forwarded-uri'];
+      if (target && target.startsWith('/api')) {
+        req.url = target;
+      }
     }
+
     await connectDB();
     return app(req, res);
   } catch (error) {

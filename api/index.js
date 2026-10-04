@@ -3,18 +3,15 @@ import { connectDB } from '../event-booking-api/src/config/db.js';
 
 export default async function handler(req, res) {
   try {
-    const urlObj = new URL(req.url, 'http://localhost');
-    const pathParam = urlObj.searchParams.get('path');
-    
-    if (pathParam) {
-      req.url = pathParam;
-    } else if (req.headers) {
-      const targetUrl = req.headers['x-forwarded-uri']
-        || req.headers['x-original-url']
-        || req.headers['x-invoke-path']
-        || req.headers['x-matched-path'];
-      if (targetUrl && targetUrl !== '/api') {
-        req.url = targetUrl;
+    if (req.url && req.url.includes('/health')) {
+      req.url = '/health';
+    } else if (req.query && req.query['0']) {
+      const sub = req.query['0'];
+      req.url = sub.startsWith('/') ? sub : `/api/${sub}`;
+    } else if (req.headers && (req.headers['x-matched-path'] || req.headers['x-forwarded-uri'])) {
+      const target = req.headers['x-matched-path'] || req.headers['x-forwarded-uri'];
+      if (target && target.startsWith('/api')) {
+        req.url = target;
       }
     }
 
