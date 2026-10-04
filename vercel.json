@@ -1,8 +1,26 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/((?!api).*)",
-      "destination": "/event_booking_app/build/web/$1"
+      "src": "event-booking-api/api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "event_booking_app/build/web/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/event-booking-api/api/index.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/event_booking_app/build/web/index.html"
     }
   ]
 }
