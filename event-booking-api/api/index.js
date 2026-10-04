@@ -3,10 +3,6 @@ import { connectDB } from '../src/config/db.js';
 
 export default async function handler(req, res) {
   try {
-    const originalPath = req.headers['x-forwarded-uri'] || req.headers['x-matched-path'];
-    if (originalPath && originalPath !== '/event-booking-api/api/index.js') {
-      req.url = originalPath;
-    }
     await connectDB();
     return app(req, res);
   } catch (error) {
