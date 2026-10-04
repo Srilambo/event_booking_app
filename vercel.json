@@ -1,6 +1,5 @@
 {
   "outputDirectory": "event_booking_app/build/web",
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/(.*)",
