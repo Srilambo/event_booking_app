@@ -4,6 +4,9 @@ import { config } from './env.js';
 let memServer = null;
 
 export const connectDB = async () => {
+  if (process.env.VERCEL && !process.env.HOME) {
+    process.env.HOME = '/tmp';
+  }
   if (mongoose.connection.readyState >= 1) return;
 
   try {
