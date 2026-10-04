@@ -297,7 +297,7 @@ export const seedDatabase = async ({ isAutoSeed = false } = {}) => {
   }
 };
 
-if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
+if (process.argv[1] && import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
   seedDatabase().catch((err) => {
     console.error('Failed to seed database:', err);
     process.exit(1);

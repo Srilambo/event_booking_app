@@ -16,13 +16,22 @@ import adminRoutes from './routes/admin.routes.js';
 
 const app = express();
 
+// Serverless response compatibility middleware
+app.use((req, res, next) => {
+  if (res && !res._headers) res._headers = {};
+  if (res && !res._headerNames) res._headerNames = {};
+  next();
+});
+
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
 // Security Middlewares
-app.use(helmet({
-  contentSecurityPolicy: false // Disable CSP for API backend
-}));
+if (!process.env.VERCEL) {
+  app.use(helmet({
+    contentSecurityPolicy: false // Disable CSP for API backend
+  }));
+}
 
 app.use(cors({
   origin: (origin, callback) => {
