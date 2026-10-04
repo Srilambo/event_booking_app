@@ -17,7 +17,7 @@
     },
     {
       "src": "/health",
-      "dest": "/event-booking-api/api/index.js?health=1"
+      "dest": "/event-booking-api/api/index.js"
     },
     {
       "src": "/assets/(.*)",
