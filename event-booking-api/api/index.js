@@ -3,9 +3,10 @@ import { connectDB } from '../src/config/db.js';
 
 export default async function handler(req, res) {
   try {
-    const originalPath = req.headers['x-forwarded-uri'] || req.headers['x-matched-path'];
-    if (originalPath && originalPath !== '/api') {
-      req.url = originalPath;
+    const urlObj = new URL(req.url, 'http://localhost');
+    const pathParam = urlObj.searchParams.get('path');
+    if (pathParam) {
+      req.url = pathParam.startsWith('/') ? pathParam : `/api/${pathParam}`;
     }
     await connectDB();
     return app(req, res);
