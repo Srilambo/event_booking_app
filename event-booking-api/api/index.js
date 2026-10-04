@@ -3,10 +3,10 @@ import { connectDB } from '../src/config/db.js';
 
 export default async function handler(req, res) {
   try {
-    const urlObj = new URL(req.url, 'http://localhost');
-    const pathParam = urlObj.searchParams.get('path');
-    if (pathParam) {
-      req.url = pathParam.startsWith('/') ? pathParam : `/api/${pathParam}`;
+    if (req.query && req.query.health) {
+      req.url = '/health';
+    } else if (req.query && req.query['0']) {
+      req.url = req.query['0'].startsWith('/') ? req.query['0'] : `/api/${req.query['0']}`;
     }
     await connectDB();
     return app(req, res);
