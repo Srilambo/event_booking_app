@@ -16,13 +16,16 @@ export const connectDB = async () => {
     console.warn(`[Database] Native MongoDB connection failed (${err.message}). Starting MongoMemoryServer fallback...`);
     try {
       const { MongoMemoryServer } = await import('mongodb-memory-server');
-      memServer = await MongoMemoryServer.create();
+      memServer = await MongoMemoryServer.create({
+        instance: { dbName: 'event_booking_db' },
+        download: process.env.VERCEL ? { downloadDir: '/tmp/mongodb-binaries' } : undefined
+      });
       const memUri = memServer.getUri();
       await mongoose.connect(memUri);
       console.log(`[Database] Connected to MongoMemoryServer at ${memUri}`);
     } catch (memErr) {
       console.error('[Database] Failed to start MongoMemoryServer:', memErr);
-      process.exit(1);
+      throw new Error(`Database connection failed: ${err.message}. Fallback memory server error: ${memErr.message}`);
     }
   }
 

@@ -1,9 +1,12 @@
+
 import 'package:flutter/foundation.dart';
 
 class ApiEndpoints {
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: kIsWeb ? '/api/v1' : 'http://localhost:5000/api/v1',
+    defaultValue: kIsWeb
+        ? (kDebugMode ? 'http://localhost:5000/api/v1' : '/api/v1')
+        : 'http://localhost:5000/api/v1',
   );
 
   // Auth
