@@ -8,8 +8,14 @@ export default async function handler(req, res) {
     
     if (pathParam) {
       req.url = pathParam;
-    } else if (req.headers && (req.headers['x-forwarded-uri'] || req.headers['x-original-url'])) {
-      req.url = req.headers['x-forwarded-uri'] || req.headers['x-original-url'];
+    } else if (req.headers) {
+      const targetUrl = req.headers['x-forwarded-uri']
+        || req.headers['x-original-url']
+        || req.headers['x-invoke-path']
+        || req.headers['x-matched-path'];
+      if (targetUrl && targetUrl !== '/api') {
+        req.url = targetUrl;
+      }
     }
 
     await connectDB();
