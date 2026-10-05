@@ -3,11 +3,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/index.js?path=:path*"
+      "destination": "/api/index?path=:path*"
     },
     {
       "source": "/health",
-      "destination": "/api/index.js"
+      "destination": "/api/index"
     },
     {
       "source": "/((?!api/|health|assets/|canvaskit/|icons/|favicon.png|flutter.js|flutter_bootstrap.js|flutter_service_worker.js|main.dart.js|manifest.json|version.json).*)",
