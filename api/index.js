@@ -3,15 +3,30 @@ import { connectDB } from '../event-booking-api/src/config/db.js';
 
 export default async function handler(req, res) {
   try {
-    if (req.url && req.url.includes('/health')) {
+    let rawUrl = req.url || '';
+    
+    if (rawUrl.includes('/health')) {
       req.url = '/health';
-    } else if (req.query && req.query['0']) {
-      const sub = req.query['0'];
-      req.url = sub.startsWith('/') ? sub : `/api/${sub}`;
-    } else if (req.headers && (req.headers['x-matched-path'] || req.headers['x-forwarded-uri'])) {
-      const target = req.headers['x-matched-path'] || req.headers['x-forwarded-uri'];
-      if (target && target.startsWith('/api')) {
-        req.url = target;
+    } else {
+      let subPath = '';
+      if (req.query && req.query['0']) {
+        subPath = req.query['0'];
+      } else if (req.headers && req.headers['x-forwarded-uri']) {
+        subPath = req.headers['x-forwarded-uri'];
+      } else if (req.headers && req.headers['x-matched-path']) {
+        subPath = req.headers['x-matched-path'];
+      } else {
+        subPath = rawUrl;
+      }
+
+      // Strip query parameters for prefix check if any
+      const cleanSub = subPath.split('?')[0];
+      if (cleanSub.startsWith('/api/')) {
+        req.url = subPath;
+      } else if (cleanSub.startsWith('api/')) {
+        req.url = `/${subPath}`;
+      } else {
+        req.url = `/api/${cleanSub.replace(/^\/+/, '')}`;
       }
     }
 
