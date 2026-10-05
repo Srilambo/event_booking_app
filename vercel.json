@@ -1,30 +1,17 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "event-booking-api/api/index.js",
-      "use": "@vercel/node"
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
     },
     {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/event-booking-api/api/index.js"
+      "source": "/health",
+      "destination": "/api/index.js"
     },
     {
-      "src": "/health",
-      "dest": "/event-booking-api/api/index.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/((?!api/|health|assets/|canvaskit/|icons/|favicon.png|flutter.js|flutter_bootstrap.js|flutter_service_worker.js|main.dart.js|manifest.json|version.json).*)",
+      "destination": "/index.html"
     }
   ]
 }
