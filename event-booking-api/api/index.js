@@ -3,31 +3,32 @@ import { connectDB } from '../src/config/db.js';
 
 export default async function handler(req, res) {
   try {
-    let rawUrl = req.url || '';
-    
-    if (rawUrl.includes('/health')) {
-      req.url = '/health';
-    } else {
-      let subPath = '';
-      if (req.query && req.query['0']) {
-        subPath = req.query['0'];
-      } else if (req.headers && req.headers['x-forwarded-uri']) {
-        subPath = req.headers['x-forwarded-uri'];
-      } else if (req.headers && req.headers['x-matched-path']) {
-        subPath = req.headers['x-matched-path'];
-      } else {
-        subPath = rawUrl;
-      }
+    let targetPath = '';
 
-      const cleanSub = subPath.split('?')[0];
-      if (cleanSub.startsWith('/api/')) {
-        req.url = subPath;
-      } else if (cleanSub.startsWith('api/')) {
-        req.url = `/${subPath}`;
-      } else {
-        req.url = `/api/${cleanSub.replace(/^\/+/, '')}`;
-      }
+    if (req.url && req.url.includes('/health')) {
+      targetPath = '/health';
+    } else if (req.query && req.query.path) {
+      targetPath = `/api/${req.query.path}`;
+    } else if (req.headers && req.headers['x-forwarded-uri']) {
+      targetPath = req.headers['x-forwarded-uri'];
+    } else if (req.headers && req.headers['x-matched-path']) {
+      targetPath = req.headers['x-matched-path'];
+    } else {
+      targetPath = req.url || '';
     }
+
+    targetPath = targetPath.split('?')[0];
+    if (!targetPath.startsWith('/api') && targetPath !== '/health') {
+      targetPath = `/api/${targetPath.replace(/^\/+/, '')}`;
+    }
+
+    req.url = targetPath;
+    req.originalUrl = targetPath;
+    delete req._parsedUrl;
+    delete req._parsedUrlUrl;
+    delete req._parsedUrlOriginal;
+
+    res.setHeader('X-Debug-Target-Url', targetPath);
 
     await connectDB();
     return app(req, res);

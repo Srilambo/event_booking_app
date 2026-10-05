@@ -32,6 +32,8 @@ app.use((req, res, next) => {
   if (!req.connection) req.connection = req.socket;
   if (req.query && req.query.url) {
     req.url = req.query.url;
+  } else if (req.query && req.query.path && !req.url.startsWith('/api/v1')) {
+    req.url = `/api/${req.query.path}`;
   }
   next();
 });
