@@ -23,6 +23,9 @@ export default async function handler(req, res) {
     }
 
     req.url = targetPath;
+    req.originalUrl = targetPath;
+    delete req._parsedUrl;
+    delete req._parsedUrlUrl;
 
     await connectDB();
     return app(req, res);
