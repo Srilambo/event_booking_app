@@ -26,6 +26,10 @@ export default async function handler(req, res) {
     req.originalUrl = targetPath;
     delete req._parsedUrl;
     delete req._parsedUrlUrl;
+    delete req._parsedUrlOriginal;
+
+    // Set debugging header
+    res.setHeader('X-Debug-Target-Url', targetPath);
 
     await connectDB();
     return app(req, res);
