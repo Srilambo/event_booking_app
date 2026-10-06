@@ -2,8 +2,19 @@ import 'package:intl/intl.dart';
 
 class Formatters {
   static String currency(num amount) {
-    final formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
-    return formatter.format(amount);
+    if (amount <= 0) return 'FREE';
+    final formatter = NumberFormat('#,##0', 'en_US');
+    return 'LKR ${formatter.format(amount)}';
+  }
+
+  static String compactCurrency(num amount) {
+    if (amount <= 0) return 'FREE';
+    if (amount >= 1000) {
+      double val = amount / 1000.0;
+      String formatted = val % 1 == 0 ? val.toInt().toString() : val.toStringAsFixed(1);
+      return '${formatted}K';
+    }
+    return amount.toInt().toString();
   }
 
   static String formatDate(DateTime date) {

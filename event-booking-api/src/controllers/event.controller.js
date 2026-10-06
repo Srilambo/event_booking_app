@@ -6,7 +6,7 @@ import { isOwnerOrAdmin } from '../middleware/role.js';
 
 export const getEvents = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page || '1', 10);
-  const limit = parseInt(req.query.limit || '10', 10);
+  const limit = parseInt(req.query.limit || '100', 10);
   const skip = (page - 1) * limit;
 
   const filter = {};
@@ -21,19 +21,19 @@ export const getEvents = asyncHandler(async (req, res) => {
       { createdBy: req.user._id }
     ];
   }
-  // Admin sees all statuses (no status filter constraint unless requested)
 
-  // Search filter (text / regex on title, description, city)
+  // Search filter (text / regex on title, description, city, venueName)
   if (req.query.search) {
     const safeSearch = escapeRegex(req.query.search);
     filter.$or = [
       { title: { $regex: safeSearch, $options: 'i' } },
       { description: { $regex: safeSearch, $options: 'i' } },
-      { city: { $regex: safeSearch, $options: 'i' } }
+      { city: { $regex: safeSearch, $options: 'i' } },
+      { venueName: { $regex: safeSearch, $options: 'i' } }
     ];
   }
 
-  if (req.query.category) {
+  if (req.query.category && req.query.category !== 'All') {
     filter.category = req.query.category;
   }
 
@@ -74,7 +74,6 @@ export const getEventById = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Event not found');
   }
 
-  // Access check
   if (event.status !== 'published') {
     if (!req.user) {
       throw new ApiError(404, 'Event not found');
@@ -92,9 +91,22 @@ export const getEventById = asyncHandler(async (req, res) => {
 });
 
 export const createEvent = asyncHandler(async (req, res) => {
+  const venueName = req.body.venueName || req.body.venue || 'Colombo Venue';
+  const latitude = req.body.latitude != null ? Number(req.body.latitude) : 6.9271;
+  const longitude = req.body.longitude != null ? Number(req.body.longitude) : 79.8612;
+
   const eventData = {
     ...req.body,
-    availableSeats: req.body.totalSeats,
+    venueName,
+    venue: venueName,
+    latitude,
+    longitude,
+    location: {
+      type: 'Point',
+      coordinates: [longitude, latitude]
+    },
+    currency: req.body.currency || 'LKR',
+    availableSeats: req.body.availableSeats ?? req.body.totalSeats,
     createdBy: req.user._id
   };
 
@@ -117,10 +129,26 @@ export const updateEvent = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'Forbidden: You can only edit your own events');
   }
 
-  // Handle totalSeats change logic
   if (req.body.totalSeats !== undefined) {
     const seatDifference = req.body.totalSeats - event.totalSeats;
     req.body.availableSeats = Math.max(0, event.availableSeats + seatDifference);
+  }
+
+  if (req.body.venueName || req.body.venue) {
+    const venueStr = req.body.venueName || req.body.venue;
+    req.body.venueName = venueStr;
+    req.body.venue = venueStr;
+  }
+
+  if (req.body.latitude != null || req.body.longitude != null) {
+    const lat = req.body.latitude != null ? Number(req.body.latitude) : event.latitude;
+    const lng = req.body.longitude != null ? Number(req.body.longitude) : event.longitude;
+    req.body.latitude = lat;
+    req.body.longitude = lng;
+    req.body.location = {
+      type: 'Point',
+      coordinates: [lng, lat]
+    };
   }
 
   Object.assign(event, req.body);

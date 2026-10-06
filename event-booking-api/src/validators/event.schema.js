@@ -6,13 +6,20 @@ export const createEventSchema = z.object({
     description: z.string().min(10),
     category: z.enum(['Music', 'Tech', 'Sports', 'Arts', 'Business', 'Food', 'General']),
     imageUrl: z.string().url().optional(),
-    venue: z.string().min(2),
+    venueName: z.string().min(2).optional(),
+    venue: z.string().min(2).optional(),
     city: z.string().min(2),
+    address: z.string().optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
     startDate: z.string().datetime({ message: 'Invalid ISO date string' }),
     endDate: z.string().datetime({ message: 'Invalid ISO date string' }),
     price: z.number().min(0, 'Price must be non-negative'),
+    currency: z.string().optional(),
     totalSeats: z.number().int().min(1, 'Total seats must be at least 1'),
-    status: z.enum(['draft', 'published', 'cancelled']).optional()
+    organizerName: z.string().optional(),
+    status: z.enum(['draft', 'published', 'cancelled']).optional(),
+    isSample: z.boolean().optional(),
   }).strip().refine((data) => new Date(data.endDate) > new Date(data.startDate), {
     message: 'End date must be after start date',
     path: ['endDate']
@@ -24,13 +31,20 @@ const eventBodyPartial = z.object({
   description: z.string().min(10).optional(),
   category: z.enum(['Music', 'Tech', 'Sports', 'Arts', 'Business', 'Food', 'General']).optional(),
   imageUrl: z.string().url().optional(),
+  venueName: z.string().min(2).optional(),
   venue: z.string().min(2).optional(),
   city: z.string().min(2).optional(),
+  address: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   startDate: z.string().datetime({ message: 'Invalid ISO date string' }).optional(),
   endDate: z.string().datetime({ message: 'Invalid ISO date string' }).optional(),
   price: z.number().min(0, 'Price must be non-negative').optional(),
+  currency: z.string().optional(),
   totalSeats: z.number().int().min(1, 'Total seats must be at least 1').optional(),
-  status: z.enum(['draft', 'published', 'cancelled']).optional()
+  organizerName: z.string().optional(),
+  status: z.enum(['draft', 'published', 'cancelled']).optional(),
+  isSample: z.boolean().optional(),
 }).strip();
 
 export const updateEventSchema = z.object({

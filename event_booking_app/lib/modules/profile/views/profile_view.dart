@@ -1,17 +1,9 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../authentication/controllers/auth_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-
-class ProfileController extends GetxController {
-  final RxBool isDarkMode = false.obs;
-
-  void toggleTheme() {
-    isDarkMode.value = !isDarkMode.value;
-    Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
-  }
-}
+import '../../../core/theme/theme_controller.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -19,12 +11,12 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authController = Get.find<AuthController>();
-    final profileController = Get.put(ProfileController());
+    final themeController = Get.find<ThemeController>();
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final textSecondary = isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-    final primary = isDark ? AppColors.primaryDarkTheme : AppColors.primary;
+    final customColors = context.customColors;
+    final textPrimary = customColors.textPrimary;
+    final textSecondary = customColors.textSecondary;
+    final primary = customColors.accentPurple;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile & Settings')),
@@ -32,6 +24,8 @@ class ProfileView extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         child: Obx(() {
           final user = authController.currentUser.value;
+          final isCurrentlyDark = themeController.isDarkMode(context);
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -39,7 +33,7 @@ class ProfileView extends StatelessWidget {
                 radius: 48,
                 backgroundColor: primary.withValues(alpha: 0.15),
                 child: Text(
-                  user?.name.substring(0, 1).toUpperCase() ?? 'U',
+                  user?.name.isNotEmpty == true ? user!.name.substring(0, 1).toUpperCase() : 'U',
                   style: AppTextStyles.displayLarge(primary),
                 ),
               ),
@@ -63,28 +57,52 @@ class ProfileView extends StatelessWidget {
 
               // Settings List
               Card(
+                color: customColors.surface,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: customColors.fieldBorder),
+                ),
                 child: Column(
                   children: [
                     ListTile(
                       leading: const Icon(Icons.person_outline),
-                      title: const Text('Edit Account Info'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      title: Text('Edit Account Info', style: TextStyle(color: textPrimary)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: textSecondary),
                       onTap: () {},
                     ),
                     const Divider(height: 1),
-                    Obx(
-                      () => SwitchListTile(
-                        secondary: const Icon(Icons.dark_mode_outlined),
-                        title: const Text('Dark Mode'),
-                        value: profileController.isDarkMode.value,
-                        onChanged: (_) => profileController.toggleTheme(),
+                    SwitchListTile(
+                      secondary: Icon(
+                        isCurrentlyDark ? Icons.dark_mode : Icons.light_mode,
+                        color: isCurrentlyDark ? customColors.accentLime : customColors.accentPurple,
                       ),
+                      title: Text('Dark Mode', style: TextStyle(color: textPrimary)),
+                      subtitle: Text(
+                        isCurrentlyDark ? 'Dark theme active' : 'Light theme active',
+                        style: TextStyle(color: textSecondary, fontSize: 12),
+                      ),
+                      value: isCurrentlyDark,
+                      onChanged: (_) => themeController.toggleTheme(context),
+                    ),
+                    const Divider(height: 1),
+                    SwitchListTile(
+                      secondary: Icon(
+                        Icons.smart_button_outlined,
+                        color: customColors.accentPurple,
+                      ),
+                      title: Text('Show floating theme button', style: TextStyle(color: textPrimary)),
+                      subtitle: Text(
+                        'Drag anywhere to move, off-screen to hide',
+                        style: TextStyle(color: textSecondary, fontSize: 12),
+                      ),
+                      value: !themeController.isFloatingButtonHidden,
+                      onChanged: (val) => themeController.setFloatingButtonHidden(!val),
                     ),
                     const Divider(height: 1),
                     ListTile(
                       leading: const Icon(Icons.security_outlined),
-                      title: const Text('Security & Privacy'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      title: Text('Security & Privacy', style: TextStyle(color: textPrimary)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: textSecondary),
                       onTap: () {},
                     ),
                   ],

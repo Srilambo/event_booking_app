@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
+import 'core/theme/theme_toggle_button.dart';
 import 'core/storage/secure_storage_service.dart';
 import 'core/network/dio_client.dart';
 import 'routes/app_pages.dart';
@@ -8,6 +10,9 @@ import 'modules/authentication/bindings/auth_binding.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize ThemeController for Theme & Floating Button Persistence
+  Get.put(ThemeController(), permanent: true);
 
   // Initialize Global Core Services
   final storage = SecureStorageService();
@@ -27,26 +32,33 @@ class EventifyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Eventify - Event Booking',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      initialRoute: AppPages.initial,
-      getPages: AppPages.pages,
-      builder: (context, child) {
-        // Enforce anti-overflow text scaling clamp as specified in Prompt 2
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: MediaQuery.textScalerOf(context).clamp(
-              minScaleFactor: 0.85,
-              maxScaleFactor: 1.3,
-            ),
-          ),
-          child: child!,
-        );
-      },
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(
+      () => GetMaterialApp(
+        title: 'Eventify - Event Booking',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeController.themeMode,
+        initialRoute: AppPages.initial,
+        getPages: AppPages.pages,
+        navigatorObservers: [
+          GetObserver((routing) {
+            if (routing?.current != null && routing!.current.isNotEmpty) {
+              themeController.updateCurrentRoute(routing.current);
+            }
+          }),
+        ],
+        builder: (context, child) {
+          return Stack(
+            children: [
+              if (child != null) child,
+              const ThemeToggleButton(),
+            ],
+          );
+        },
+      ),
     );
   }
 }

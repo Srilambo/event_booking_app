@@ -23,15 +23,45 @@ const eventSchema = new mongoose.Schema(
       type: String,
       default: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=800&q=80'
     },
+    venueName: {
+      type: String,
+      required: [true, 'Venue name is required'],
+      trim: true
+    },
     venue: {
       type: String,
-      required: [true, 'Venue is required'],
       trim: true
     },
     city: {
       type: String,
       required: [true, 'City is required'],
       trim: true
+    },
+    address: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    latitude: {
+      type: Number,
+      required: true,
+      default: 6.9271
+    },
+    longitude: {
+      type: Number,
+      required: true,
+      default: 79.8612
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point'
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        default: [79.8612, 6.9271]
+      }
     },
     startDate: {
       type: Date,
@@ -46,6 +76,10 @@ const eventSchema = new mongoose.Schema(
       required: [true, 'Price is required'],
       min: [0, 'Price must be non-negative']
     },
+    currency: {
+      type: String,
+      default: 'LKR'
+    },
     totalSeats: {
       type: Number,
       required: [true, 'Total seats is required'],
@@ -56,10 +90,19 @@ const eventSchema = new mongoose.Schema(
       required: [true, 'Available seats is required'],
       min: [0, 'Available seats cannot be negative']
     },
+    organizerName: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     status: {
       type: String,
       enum: ['draft', 'published', 'cancelled'],
       default: 'published'
+    },
+    isSample: {
+      type: Boolean,
+      default: false
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -72,8 +115,26 @@ const eventSchema = new mongoose.Schema(
   }
 );
 
-// Compound index as required by prompt
+// Pre-save hook to sync venue/venueName and GeoJSON location
+eventSchema.pre('save', function (next) {
+  if (this.longitude != null && this.latitude != null) {
+    this.location = {
+      type: 'Point',
+      coordinates: [this.longitude, this.latitude]
+    };
+  }
+  if (!this.venueName && this.venue) {
+    this.venueName = this.venue;
+  }
+  if (!this.venue && this.venueName) {
+    this.venue = this.venueName;
+  }
+  next();
+});
+
+// Indexes
+eventSchema.index({ location: '2dsphere' });
 eventSchema.index({ startDate: 1, category: 1, status: 1 });
-eventSchema.index({ title: 'text', description: 'text', city: 'text' });
+eventSchema.index({ title: 'text', description: 'text', city: 'text', venueName: 'text' });
 
 export const Event = mongoose.model('Event', eventSchema);
