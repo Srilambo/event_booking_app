@@ -19,7 +19,9 @@ import adminRoutes from './routes/admin.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const webBuildPath = path.resolve(__dirname, '../../event_booking_app/build/web');
+const publicPath = path.resolve(__dirname, '../../public');
+const flutterBuildPath = path.resolve(__dirname, '../../event_booking_app/build/web');
+const webBuildPath = fs.existsSync(publicPath) ? publicPath : flutterBuildPath;
 
 const app = express();
 
